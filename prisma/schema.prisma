@@ -1,0 +1,115 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum UserRole {
+  ADMIN
+  STUDENT
+}
+
+enum BookingType {
+  CONSULTATION
+  DOUBT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id            String      @id @default(cuid())
+  name          String?
+  email         String      @unique
+  password      String
+  role          UserRole    @default(STUDENT)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  enrollments   Enrollment[]
+  bookings      Booking[]
+}
+
+model Course {
+  id                  String      @id @default(cuid())
+  title               String
+  description         String
+  price               Float
+  thumbnail           String?
+  isEnrollmentEnabled Boolean     @default(true)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  sections           Section[]
+  enrollments        Enrollment[]
+}
+
+model Section {
+  id        String    @id @default(cuid())
+  title     String
+  order     Int       @default(1)
+  courseId  String
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons   Lesson[]
+  materials Material[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String
+  order       Int
+  videoUrl    String
+  completed   Boolean  @default(false)
+  sectionId   String
+  section     Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}
+
+model Material {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  url         String
+  type        String   // PDF, PPT, DOC, etc.
+  order       Int      @default(1)
+  sectionId   String
+  section     Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  progress  Int      @default(0)
+  status    String   @default("ACTIVE")
+  userId    String
+  courseId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  type        BookingType
+  startTime   DateTime
+  endTime     DateTime
+  description String
+  status      BookingStatus @default(PENDING)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+} 

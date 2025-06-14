@@ -1,0 +1,35 @@
+# Dependencies
+# ----------------------------------------------------------------
+# Never commit your dependencies. They are installed with 'npm install'.
+/node_modules
+/.pnp
+.pnp.js
+
+# Build Outputs
+# ----------------------------------------------------------------
+# These are generated when you build your project.
+/.next
+/out
+/build
+
+# Environment Variables
+# ----------------------------------------------------------------
+# CRITICAL: Never commit sensitive keys or secrets.
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database Files
+# ----------------------------------------------------------------
+# VERY IMPORTANT: Never commit your database file.
+*.db
+*.db-journal
+
+# Logs & System Files
+# ----------------------------------------------------------------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
